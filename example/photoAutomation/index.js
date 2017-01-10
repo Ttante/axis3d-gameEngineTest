@@ -44,15 +44,21 @@ raf(() => {
 })
 
 
+let frameCount = 0
 let recording = false
+let playing = false
 let count = 0
 const maxCount = 120
 
 
 document.addEventListener("keyup", recordingToggle)
 function recordingToggle(e) {
+  console.log('e.keyCode: ', e.keyCode)
   if (e.keyCode == 82) {
     recording = !recording
+  } else if (e.keyCode == 80) {
+    playing = !playing
+    frameCount = 0
   } else {
     console.log("error")
   }
@@ -66,6 +72,8 @@ let speed = 0.001
 let getVerticalSpeed = (x) => { return x/2 }
 let verticalSpeed
 let verticalLimit = 4
+let xCoords = []
+let yCoords = []
 // axis animation frame loop
 frame(({time}) => {
   // update controller states
@@ -78,7 +86,18 @@ frame(({time}) => {
   }
 
   verticalSpeed = getVerticalSpeed(time)
-  orbitController.orientation.x = Math.cos(verticalSpeed) / verticalLimit
+  // orbitController.orientation.x = Math.cos(verticalSpeed) / verticalLimit
+  if (recording) {
+    xCoords.push(orbitController.orientation.x)
+    yCoords.push(orbitController.orientation.y)
+  }
+
+  if (recording === false && playing) {
+    orbitController.orientation.x = xCoords[frameCount]
+    orbitController.orientation.y = yCoords[frameCount]
+    frameCount++
+  }
+
   if (count < maxCount) {
     count++ 
   } else {
