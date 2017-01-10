@@ -44,6 +44,8 @@ raf(() => {
 })
 
 
+let initCamPos = {}
+let startCreated = false
 let frameCount = 0
 let recording = false
 let playing = false
@@ -56,6 +58,10 @@ function recordingToggle(e) {
   console.log('e.keyCode: ', e.keyCode)
   if (e.keyCode == 82) {
     recording = !recording
+    if (recording === true) {
+      xCoords = []
+      yCoords = []
+    }
   } else if (e.keyCode == 80) {
     playing = !playing
     frameCount = 0
@@ -73,6 +79,11 @@ frame(({time}) => {
   // update controller states
   orbitController()
 
+  if (startCreated === false) {
+    initCamPos.x = orbitController.orientation.x
+    initCamPos.y = orbitController.orientation.y
+    startCreated = true
+  }
   if (recording) {
     xCoords.push(orbitController.orientation.x)
     yCoords.push(orbitController.orientation.y)
@@ -82,6 +93,14 @@ frame(({time}) => {
     orbitController.orientation.x = xCoords[frameCount]
     orbitController.orientation.y = yCoords[frameCount]
     frameCount++
+
+    // if at end of array, set to initial camera position
+    if (frameCount == xCoords.length - 1) {
+      frameCount = 0
+      playing = false
+      orbitController.orientation.x = initCamPos.x
+      orbitController.orientation.y = initCamPos.y
+    }
   }
 
   if (count < maxCount) {
