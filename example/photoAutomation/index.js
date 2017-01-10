@@ -66,27 +66,13 @@ function recordingToggle(e) {
 
 
 // rotate
-let counter = 0
-let reverse = false
-let speed = 0.001
-let getVerticalSpeed = (x) => { return x/2 }
-let verticalSpeed
-let verticalLimit = 4
 let xCoords = []
 let yCoords = []
 // axis animation frame loop
 frame(({time}) => {
   // update controller states
   orbitController()
-  orbitController.orientation.y = counter
-  if (reverse) {
-    counter -= speed
-  } else {
-  counter += speed 
-  }
 
-  verticalSpeed = getVerticalSpeed(time)
-  // orbitController.orientation.x = Math.cos(verticalSpeed) / verticalLimit
   if (recording) {
     xCoords.push(orbitController.orientation.x)
     yCoords.push(orbitController.orientation.y)
